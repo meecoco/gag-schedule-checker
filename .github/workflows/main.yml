@@ -1,0 +1,30 @@
+name: GAG Schedule Checker
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # 毎日12:00(JST)に実行（GitHubはUTCで動く）
+  workflow_dispatch:  # 手動実行もできるように
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 tweepy
+
+      - name: Run script
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: python check_gag.py
